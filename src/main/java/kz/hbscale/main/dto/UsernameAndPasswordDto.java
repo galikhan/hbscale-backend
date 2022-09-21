@@ -1,12 +1,9 @@
-package kz.hbscale.main.jwt;
+package kz.hbscale.main.dto;
 
 public class UsernameAndPasswordDto {
 
-    private String username;
-    private String password;
-
-    public UsernameAndPasswordDto() {
-    }
+    public String username;
+    public String password;
 
     public String getUsername() {
         return username;
