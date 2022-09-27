@@ -29,7 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         System.out.println("entity {}" + entity);
         System.out.println("entity {}" + entity.getUsername());
         User u = new User(entity.getUsername(), entity.getPassword(), new ArrayList<>());
-//        User u = new User("", "", new ArrayList<>());
         return u;
     }
 }

@@ -69,11 +69,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         try {
             Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             String username = (String) claimsJws.getBody().get("username");
-            System.out.println("username : " + username);
             return Optional.of(username);
         } catch (JwtException e) {
             System.out.println(e.getMessage());
             return null;
         }
     }
+
 }

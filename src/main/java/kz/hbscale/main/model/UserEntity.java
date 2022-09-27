@@ -1,8 +1,10 @@
 package kz.hbscale.main.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.io.Serializable;
 
 @Table(name="users")
@@ -11,6 +13,7 @@ public class UserEntity implements Serializable {
 
     @Id
     public Long id;
+    @Column(unique = true, name="username")
     public String username;
     public String password;
 
