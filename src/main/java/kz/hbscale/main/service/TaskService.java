@@ -1,6 +1,7 @@
 package kz.hbscale.main.service;
 
 import kz.hbscale.main.dto.TaskDto;
+import kz.hbscale.main.enums.TaskStatus;
 import kz.hbscale.main.model.DictionaryEntity;
 import kz.hbscale.main.model.PersonEntity;
 import kz.hbscale.main.model.TaskEntity;
@@ -46,8 +47,13 @@ public class TaskService {
 
         String username = (String) authenticationFacade.getAuthentication().getPrincipal();
         log.info("username -{}-", username);
-
         TaskEntity taskEntity = new TaskEntity();
+        if(taskDto.id != null) {
+            Optional<TaskEntity> task = taskRepository.findById(taskDto.id);
+            if(task.isPresent()) {
+                taskEntity = task.get();
+            }
+        }
         taskEntity.address = taskDto.address;
         taskEntity.name = taskDto.name;
         taskEntity.fromQuarter = taskDto.from.quarter;
@@ -56,15 +62,15 @@ public class TaskService {
         taskEntity.toYear = taskDto.to.year;
         taskEntity.lat = taskDto.lat;
         taskEntity.lng = taskDto.lng;
-        Optional<DictionaryEntity> contractor = dictionaryRepository.findById(taskDto.contractor.id);
+        Optional<DictionaryEntity> contractor = dictionaryRepository.findById(taskDto.contractor);
         if (contractor.isPresent()) {
             taskEntity.contractor = contractor.get();
         }
-        Optional<DictionaryEntity> project = dictionaryRepository.findById(taskDto.project.id);
+        Optional<DictionaryEntity> project = dictionaryRepository.findById(taskDto.project);
         if (project.isPresent()) {
             taskEntity.project = project.get();
         }
-        Optional<DictionaryEntity> customer = dictionaryRepository.findById(taskDto.customer.id);
+        Optional<DictionaryEntity> customer = dictionaryRepository.findById(taskDto.customer);
         if (customer.isPresent()) {
             taskEntity.customer = customer.get();
         }
@@ -80,6 +86,10 @@ public class TaskService {
         UserEntity user = userRepository.findByUsername(username);
         log.info("user {}", user);
         taskEntity.owner = user;
+
+        if(taskDto.status != null) {
+            taskEntity.status= TaskStatus.valueOf(taskDto.status);
+        }
 
         this.taskRepository.save(taskEntity);
         return new TaskDto(taskEntity);
