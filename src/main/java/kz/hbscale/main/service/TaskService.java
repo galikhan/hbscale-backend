@@ -11,6 +11,7 @@ import kz.hbscale.main.repository.PersonRepository;
 import kz.hbscale.main.repository.TaskRepository;
 import kz.hbscale.main.repository.UserRepository;
 import kz.hbscale.main.security.facade.AuthenticationFacade;
+import kz.hbscale.main.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class TaskService {
         log.info("user {}", user);
         taskEntity.owner = user;
 
-        if(taskDto.status != null) {
+        if(StringUtils.isNotEmpty(taskDto.status)) {
             taskEntity.status= TaskStatus.valueOf(taskDto.status);
         }
 
