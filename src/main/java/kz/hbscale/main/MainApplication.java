@@ -37,6 +37,9 @@ public class MainApplication {
 			);
 			user.setUsername("gali");
 			userRepository.save(user);
+
+
 		};
 	}
+
 }
