@@ -14,8 +14,13 @@ import kz.hbscale.main.security.facade.AuthenticationFacade;
 import kz.hbscale.main.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -92,6 +97,9 @@ public class TaskService {
             taskEntity.status= TaskStatus.valueOf(taskDto.status);
         }
 
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        taskEntity.whenContact = LocalDate.parse(taskDto.whenContact, pattern);
+
         this.taskRepository.save(taskEntity);
         return new TaskDto(taskEntity);
     }
@@ -102,6 +110,6 @@ public class TaskService {
         log.info("username -{}-", username);
         UserEntity user = userRepository.findByUsername(username);
         List<TaskEntity> tasks = taskRepository.findByOwner(user);
-        return tasks.stream().map(TaskDto::new).collect(Collectors.toList());
+        return tasks.stream().map(TaskDto::new).sorted(Comparator.comparing((TaskDto taskDto) -> taskDto.daysLeft)).collect(Collectors.toList());
     }
 }

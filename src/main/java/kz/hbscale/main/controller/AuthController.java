@@ -28,13 +28,6 @@ public class AuthController {
         this.authenticationFacade = authenticationFacade;
     }
 
-    @PostMapping("/task")
-    public TaskDto save(@RequestBody TaskDto dto) {
-        System.out.println("getPrincipal:" + authenticationFacade.getAuthentication().getPrincipal());
-        return taskService.save(dto);
-    }
-
-
     @GetMapping("/hello")
     public String sayHello() {
         System.out.println("getPrincipal:" + authenticationFacade.getAuthentication().getPrincipal());

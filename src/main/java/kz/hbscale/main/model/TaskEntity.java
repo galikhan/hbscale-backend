@@ -15,6 +15,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name="santec_task")
@@ -76,4 +77,6 @@ public class TaskEntity implements Serializable {
     @Column(name="status")
     public TaskStatus status = TaskStatus.waiting;
 
+    @Column(name="when_contact")
+    public LocalDate whenContact;
 }

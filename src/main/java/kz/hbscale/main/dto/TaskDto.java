@@ -3,7 +3,13 @@ package kz.hbscale.main.dto;
 
 import kz.hbscale.main.model.TaskEntity;
 
+import javax.persistence.TemporalType;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalField;
+import java.time.temporal.TemporalUnit;
 
 public class TaskDto {
     public String status;
@@ -20,6 +26,8 @@ public class TaskDto {
     public Long customer;
     public BigDecimal lat;
     public BigDecimal lng;
+    public String whenContact;
+    public Integer daysLeft;
 
     public TaskDto() {
     }
@@ -51,6 +59,11 @@ public class TaskDto {
             this.customer = taskEntity.customer.id;
         }
         this.status = taskEntity.status.name();
+        if(taskEntity.whenContact != null) {
+            this.whenContact = taskEntity.whenContact.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            this.daysLeft = taskEntity.whenContact.getDayOfYear() - LocalDate.now().getDayOfYear();
+        }
+
     }
 
     @Override
