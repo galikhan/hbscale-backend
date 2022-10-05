@@ -30,17 +30,20 @@ public class TaskEntity implements Serializable {
     public BigDecimal lng;
     public BigDecimal lat;
 
-    @ManyToOne
-    @JoinColumn(name = "contractor", referencedColumnName = "id")
-    public DictionaryEntity contractor;
+//    @ManyToOne
+//    @JoinColumn(name = "contractor", referencedColumnName = "id")
+//    public DictionaryEntity contractor;
+    public String contractor;
 
-    @ManyToOne
-    @JoinColumn(name = "customer", referencedColumnName = "id")
-    public DictionaryEntity customer;
+//    @ManyToOne
+//    @JoinColumn(name = "customer", referencedColumnName = "id")
+//    public DictionaryEntity customer;
+    public String customer;
 
-    @ManyToOne
-    @JoinColumn(name = "project", referencedColumnName = "id")
-    public DictionaryEntity project;
+//    @ManyToOne
+//    @JoinColumn(name = "project", referencedColumnName = "id")
+//    public DictionaryEntity project;
+    public String project;
 
     @Column(name = "from_quarter")
     public String fromQuarter;

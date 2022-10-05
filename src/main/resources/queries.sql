@@ -25,3 +25,11 @@ owner        bigint references users(id)
 
 insert into dictionary_entity(id, key, code, name) values(nextval('dic_seq'), 'developers', 'bazis', 'Базис-А');
 insert into dictionary_entity(id, key, code, name) values(nextval('dic_seq'), 'developers', 'bigroup', 'BiGroup');
+
+alter table santec_task drop column contractor;
+alter table santec_task drop column customer;
+alter table santec_task drop column project;
+
+alter table santec_task add column contractor text;
+alter table santec_task add column customer text;
+alter table santec_task add column project text;

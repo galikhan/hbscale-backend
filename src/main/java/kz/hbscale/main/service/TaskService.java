@@ -68,18 +68,22 @@ public class TaskService {
         taskEntity.toYear = taskDto.to.year;
         taskEntity.lat = taskDto.lat;
         taskEntity.lng = taskDto.lng;
-        Optional<DictionaryEntity> contractor = dictionaryRepository.findById(taskDto.contractor);
-        if (contractor.isPresent()) {
-            taskEntity.contractor = contractor.get();
-        }
-        Optional<DictionaryEntity> project = dictionaryRepository.findById(taskDto.project);
-        if (project.isPresent()) {
-            taskEntity.project = project.get();
-        }
-        Optional<DictionaryEntity> customer = dictionaryRepository.findById(taskDto.customer);
-        if (customer.isPresent()) {
-            taskEntity.customer = customer.get();
-        }
+            taskEntity.contractor = taskDto.contractor;
+            taskEntity.project = taskDto.project;
+            taskEntity.customer = taskDto.customer;
+
+//        Optional<DictionaryEntity> contractor = dictionaryRepository.findById(taskDto.contractor);
+//        if (contractor.isPresent()) {
+//            taskEntity.contractor = contractor.get();
+//        }
+//        Optional<DictionaryEntity> project = dictionaryRepository.findById(taskDto.project);
+//        if (project.isPresent()) {
+//            taskEntity.project = project.get();
+//        }
+//        Optional<DictionaryEntity> customer = dictionaryRepository.findById(taskDto.customer);
+//        if (customer.isPresent()) {
+//            taskEntity.customer = customer.get();
+//        }
 
         PersonEntity supplier = new PersonEntity(taskDto.supplier.fullname, taskDto.supplier.phone);
         PersonEntity director = new PersonEntity(taskDto.director.fullname, taskDto.director.phone);

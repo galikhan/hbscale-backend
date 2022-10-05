@@ -21,13 +21,16 @@ public class TaskDto {
     public PersonDto other;
     public ConstructionPeriod from;
     public ConstructionPeriod to;
-    public Long contractor;
-    public Long project;
-    public Long customer;
+    public String contractor;
+    public String project;
+    public String customer;
+//    public Long contractor;
+//    public Long project;
+//    public Long customer;
     public BigDecimal lat;
     public BigDecimal lng;
     public String whenContact;
-    public Integer daysLeft;
+    public Integer daysLeft = -1;
 
     public TaskDto() {
     }
@@ -49,15 +52,19 @@ public class TaskDto {
             this.supplier = new PersonDto(taskEntity.supplier);
         }
 
-        if (taskEntity.contractor != null) {
-            this.contractor = taskEntity.contractor.id;
-        }
-        if (taskEntity.project != null) {
-            this.project = taskEntity.project.id;
-        }
-        if (taskEntity.customer != null) {
-            this.customer = taskEntity.customer.id;
-        }
+//        if (taskEntity.contractor != null) {
+//            this.contractor = taskEntity.contractor.id;
+//        }
+//        if (taskEntity.project != null) {
+//            this.project = taskEntity.project.id;
+//        }
+//        if (taskEntity.customer != null) {
+//            this.customer = taskEntity.customer.id;
+//        }
+        this.contractor = taskEntity.contractor;
+        this.project = taskEntity.project;
+        this.customer = taskEntity.customer;
+
         this.status = taskEntity.status.name();
         if(taskEntity.whenContact != null) {
             this.whenContact = taskEntity.whenContact.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
