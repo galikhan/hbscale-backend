@@ -2,7 +2,6 @@ package kz.hbscale.main.service;
 
 import kz.hbscale.main.dto.TaskDto;
 import kz.hbscale.main.enums.TaskStatus;
-import kz.hbscale.main.model.DictionaryEntity;
 import kz.hbscale.main.model.PersonEntity;
 import kz.hbscale.main.model.TaskEntity;
 import kz.hbscale.main.model.UserEntity;
@@ -14,10 +13,8 @@ import kz.hbscale.main.security.facade.AuthenticationFacade;
 import kz.hbscale.main.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -113,7 +110,7 @@ public class TaskService {
 
         log.info("username -{}-", username);
         UserEntity user = userRepository.findByUsername(username);
-        List<TaskEntity> tasks = taskRepository.findByOwner(user);
+        List<TaskEntity> tasks = taskRepository.findByOwnerId(user.id);
         return tasks.stream().map(TaskDto::new).sorted(Comparator.comparing((TaskDto taskDto) -> taskDto.daysLeft)).collect(Collectors.toList());
     }
 }
