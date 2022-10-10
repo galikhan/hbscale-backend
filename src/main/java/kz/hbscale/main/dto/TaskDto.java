@@ -32,6 +32,7 @@ public class TaskDto {
     public String whenContact;
     public Integer daysLeft = -1;
 
+    public String commonUUID;
     public TaskDto() {
     }
 

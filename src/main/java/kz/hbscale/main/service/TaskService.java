@@ -2,6 +2,8 @@ package kz.hbscale.main.service;
 
 import kz.hbscale.main.dto.TaskDto;
 import kz.hbscale.main.enums.TaskStatus;
+import kz.hbscale.main.fileupload.FileRepository;
+import kz.hbscale.main.fileupload.FileService;
 import kz.hbscale.main.model.PersonEntity;
 import kz.hbscale.main.model.TaskEntity;
 import kz.hbscale.main.model.UserEntity;
@@ -30,20 +32,21 @@ public class TaskService {
     private DictionaryRepository dictionaryRepository;
     private UserRepository userRepository;
     private Logger log = LogManager.getLogger(TaskService.class);
-
     private PersonRepository personRepository;
+    private FileService fileService;
 
-    public TaskService(
-            AuthenticationFacade authenticationFacade,
-            TaskRepository taskRepository,
-            DictionaryRepository dictionaryRepository,
-            UserRepository userRepository,
-            PersonRepository personRepository) {
+    public TaskService(AuthenticationFacade authenticationFacade,
+                       TaskRepository taskRepository,
+                       DictionaryRepository dictionaryRepository,
+                       UserRepository userRepository,
+                       PersonRepository personRepository,
+                       FileService fileService) {
         this.authenticationFacade = authenticationFacade;
         this.taskRepository = taskRepository;
         this.dictionaryRepository = dictionaryRepository;
         this.userRepository = userRepository;
         this.personRepository = personRepository;
+        this.fileService = fileService;
     }
 
     public TaskDto save(TaskDto taskDto) {
@@ -65,9 +68,10 @@ public class TaskService {
         taskEntity.toYear = taskDto.to.year;
         taskEntity.lat = taskDto.lat;
         taskEntity.lng = taskDto.lng;
-            taskEntity.contractor = taskDto.contractor;
-            taskEntity.project = taskDto.project;
-            taskEntity.customer = taskDto.customer;
+
+        taskEntity.contractor = taskDto.contractor;
+        taskEntity.project = taskDto.project;
+        taskEntity.customer = taskDto.customer;
 
 //        Optional<DictionaryEntity> contractor = dictionaryRepository.findById(taskDto.contractor);
 //        if (contractor.isPresent()) {
@@ -102,6 +106,8 @@ public class TaskService {
         taskEntity.whenContact = LocalDate.parse(taskDto.whenContact, pattern);
 
         this.taskRepository.save(taskEntity);
+        this.fileService.updateContainerByCommonUUID(taskEntity.id, taskDto.commonUUID);
+
         return new TaskDto(taskEntity);
     }
 
