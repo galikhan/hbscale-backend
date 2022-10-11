@@ -32,8 +32,6 @@ import java.util.List;
 @RequestMapping("/api")
 public class FileController {
 
-    @Value("${file.upload.path}")
-    private String FILE_UPLOAD;
     private FileService fileService;
     private Logger log = LogManager.getLogger(FileController.class);
     public FileController(FileService fileService) {
@@ -44,27 +42,7 @@ public class FileController {
     public String handleFileUpload(@RequestParam("file") List<MultipartFile> files) {
 
         String commonUUID = FileUtils.generateUUID();
-
-        files.stream().forEach(file -> {
-
-            try {
-
-                byte[] bytes = file.getBytes();
-                Path path = Paths.get(FILE_UPLOAD + commonUUID + "_" + file.getOriginalFilename());
-                Files.write(path, bytes);
-
-                FileDto dto = new FileDto();
-                dto.commonUUID = commonUUID;
-                dto.created = LocalDateTime.now();
-                dto.filename = file.getOriginalFilename();
-                dto.path = FILE_UPLOAD;
-
-                fileService.save(dto, commonUUID);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        fileService.saveFiles(files, commonUUID);
         return "{\"commonUUID\":  \"" + commonUUID + "\" }";
     }
 

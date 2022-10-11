@@ -1,7 +1,15 @@
 package kz.hbscale.main.fileupload;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,10 +17,46 @@ import java.util.stream.Collectors;
 @Service
 public class FileService {
 
+    @Value("${file.upload.path}")
+    private String FILE_UPLOAD;
+
     private FileRepository fileRepository;
 
     public FileService(FileRepository fileRepository) {
         this.fileRepository = fileRepository;
+    }
+
+    public void saveFiles(List<MultipartFile> files, String commonUUID) {
+
+        files.stream().forEach(file -> {
+
+            try {
+
+                byte[] bytes = file.getBytes();
+                String pathUrl = FILE_UPLOAD + commonUUID + "_" + file.getOriginalFilename();
+                String ext = FileUtils.getExtension(file.getOriginalFilename());
+                Path path = Paths.get(pathUrl);
+                File fileCreated = Files.write(path, bytes).toFile();
+                System.out.println(fileCreated.getAbsolutePath());
+
+                pathUrl = FILE_UPLOAD + commonUUID + "_" + file.getOriginalFilename();
+                boolean compressedImage = FileUtils.createImageWithCustomHeight(fileCreated, 400, ext, pathUrl);
+                System.out.println("compressedImage " + compressedImage);
+
+                FileDto dto = new FileDto();
+                dto.commonUUID = commonUUID;
+                dto.created = LocalDateTime.now();
+                dto.filename = file.getOriginalFilename();
+                dto.path = FILE_UPLOAD;
+
+                save(dto, commonUUID);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+
     }
 
     public FileDto save(FileDto file, String commonUUID) {
