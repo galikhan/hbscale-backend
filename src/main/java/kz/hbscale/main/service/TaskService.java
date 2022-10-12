@@ -119,4 +119,9 @@ public class TaskService {
         List<TaskEntity> tasks = taskRepository.findByOwnerId(user.id);
         return tasks.stream().map(TaskDto::new).sorted(Comparator.comparing((TaskDto taskDto) -> taskDto.daysLeft)).collect(Collectors.toList());
     }
+
+    public List<TaskDto> findAll() {
+        List<TaskEntity> tasks = taskRepository.findAll();
+        return tasks.stream().map(TaskDto::new).sorted(Comparator.comparing((TaskDto taskDto) -> taskDto.daysLeft)).collect(Collectors.toList());
+    }
 }

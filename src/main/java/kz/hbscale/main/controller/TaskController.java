@@ -29,6 +29,11 @@ public class TaskController {
         return this.taskService.myTasks();
     }
 
+    @GetMapping("/task/all")
+    public List<TaskDto> findAll() {
+        return this.taskService.findAll();
+    }
+
 
     @PostMapping("/task")
     public TaskDto save(@RequestBody TaskDto dto) {
