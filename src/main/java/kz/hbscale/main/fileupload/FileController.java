@@ -9,6 +9,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +30,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api")
 public class FileController {
@@ -47,14 +50,14 @@ public class FileController {
     }
 
     @GetMapping("/file/container/{container}")
-    public List<FileDto> findByContainer(@PathVariable("container") Long container) {
-        return fileService.findByContainer(container);
+    public List<FileDto> findByContainerAndIsRemoved(@PathVariable("container") Long container) {
+        return fileService.findByContainerAndIsRemoved(container);
     }
 
-//    @GetMapping("/file/{id}/preview")
-//    public List<FileDto> preview(@PathVariable("id") Long id) {
-//        return fileService.preview(id);
-//    }
+    @DeleteMapping("/file/{id}")
+    public Integer remove(@PathVariable("id") Long id) {
+        return fileService.remove(id);
+    }
 
 
     @GetMapping("/file/{id}/preview")

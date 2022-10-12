@@ -33,3 +33,5 @@ alter table santec_task drop column project;
 alter table santec_task add column contractor text;
 alter table santec_task add column customer text;
 alter table santec_task add column project text;
+
+alter table santec_task add column is_removed boolean default false;

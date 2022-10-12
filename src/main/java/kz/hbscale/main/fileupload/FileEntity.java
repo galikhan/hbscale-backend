@@ -9,8 +9,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-@Table
-@Entity(name="files")
+@Table(name="files")
+@Entity
 public class FileEntity {
 
     @Id
@@ -39,6 +39,9 @@ public class FileEntity {
 
     @Column(name = "container_type")
     public ContainerTypEnum containerType;
+
+    @Column(name="is_removed")
+    public  Boolean isRemoved = false;
 
     public FileEntity() {
     }

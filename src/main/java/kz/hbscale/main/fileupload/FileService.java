@@ -40,8 +40,7 @@ public class FileService {
                 System.out.println(fileCreated.getAbsolutePath());
 
                 pathUrl = FILE_UPLOAD + commonUUID + "_" + file.getOriginalFilename();
-                boolean compressedImage = FileUtils.createImageWithCustomHeight(fileCreated, 400, ext, pathUrl);
-                System.out.println("compressedImage " + compressedImage);
+                boolean compressedImage = FileUtils.createImageWithCustomHeight(fileCreated, 500, ext, pathUrl);
 
                 FileDto dto = new FileDto();
                 dto.commonUUID = commonUUID;
@@ -85,11 +84,19 @@ public class FileService {
         return fileRepository.findByContainer(container).stream().map(FileDto::new).collect(Collectors.toList());
     }
 
+    public List<FileDto> findByContainerAndIsRemoved(Long container) {
+        return fileRepository.findByContainerAndIsRemoved(container, false).stream().map(FileDto::new).collect(Collectors.toList());
+    }
+
     public FileDto findById(Long id) {
         Optional<FileEntity> file = fileRepository.findById(id);
         if(file.isPresent()) {
             return new FileDto(file.get());
         }
         return null;
+    }
+
+    public int remove(Long id) {
+        return fileRepository.remove(id);
     }
 }
