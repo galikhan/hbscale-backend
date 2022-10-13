@@ -1,5 +1,6 @@
 package kz.hbscale.main.service;
 
+import kz.hbscale.main.dto.ResultDto;
 import kz.hbscale.main.dto.TaskDto;
 import kz.hbscale.main.enums.TaskStatus;
 import kz.hbscale.main.fileupload.FileRepository;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -59,6 +61,10 @@ public class TaskService {
             if(task.isPresent()) {
                 taskEntity = task.get();
             }
+        } else {
+            UserEntity user = userRepository.findByUsername(username);
+            taskEntity.owner = user;
+            taskEntity.created = LocalDateTime.now();
         }
         taskEntity.address = taskDto.address;
         taskEntity.name = taskDto.name;
@@ -73,19 +79,6 @@ public class TaskService {
         taskEntity.project = taskDto.project;
         taskEntity.customer = taskDto.customer;
 
-//        Optional<DictionaryEntity> contractor = dictionaryRepository.findById(taskDto.contractor);
-//        if (contractor.isPresent()) {
-//            taskEntity.contractor = contractor.get();
-//        }
-//        Optional<DictionaryEntity> project = dictionaryRepository.findById(taskDto.project);
-//        if (project.isPresent()) {
-//            taskEntity.project = project.get();
-//        }
-//        Optional<DictionaryEntity> customer = dictionaryRepository.findById(taskDto.customer);
-//        if (customer.isPresent()) {
-//            taskEntity.customer = customer.get();
-//        }
-
         PersonEntity supplier = new PersonEntity(taskDto.supplier.fullname, taskDto.supplier.phone);
         PersonEntity director = new PersonEntity(taskDto.director.fullname, taskDto.director.phone);
         PersonEntity other = new PersonEntity(taskDto.other.fullname, taskDto.other.phone);
@@ -93,10 +86,6 @@ public class TaskService {
         taskEntity.supplier = personRepository.save(supplier);
         taskEntity.director = personRepository.save(director);
         taskEntity.other = personRepository.save(other);
-
-        UserEntity user = userRepository.findByUsername(username);
-        log.info("user {}", user);
-        taskEntity.owner = user;
 
         if(StringUtils.isNotEmpty(taskDto.status)) {
             taskEntity.status= TaskStatus.valueOf(taskDto.status);
@@ -124,4 +113,11 @@ public class TaskService {
         List<TaskEntity> tasks = taskRepository.findAll();
         return tasks.stream().map(TaskDto::new).sorted(Comparator.comparing((TaskDto taskDto) -> taskDto.daysLeft)).collect(Collectors.toList());
     }
+
+
+    public List<ResultDto> getResults() {
+        return taskRepository.getResults();
+
+    }
+
 }

@@ -1,5 +1,6 @@
 package kz.hbscale.main.controller;
 
+import kz.hbscale.main.dto.ResultDto;
 import kz.hbscale.main.dto.TaskDto;
 import kz.hbscale.main.security.facade.AuthenticationFacade;
 import kz.hbscale.main.service.TaskService;
@@ -41,5 +42,9 @@ public class TaskController {
         return taskService.save(dto);
     }
 
+    @GetMapping("/task/results")
+    public List<ResultDto> getResults() {
+        return this.taskService.getResults();
+    }
 
 }
