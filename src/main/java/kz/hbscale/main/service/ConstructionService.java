@@ -1,63 +1,59 @@
 package kz.hbscale.main.service;
 
+import kz.hbscale.main.dto.ConstructionDto;
 import kz.hbscale.main.dto.ResultDto;
-import kz.hbscale.main.dto.TaskDto;
-import kz.hbscale.main.enums.TaskStatus;
-import kz.hbscale.main.fileupload.FileRepository;
+import kz.hbscale.main.enums.ConstructionType;
 import kz.hbscale.main.fileupload.FileService;
+import kz.hbscale.main.model.ConstructionEntity;
 import kz.hbscale.main.model.PersonEntity;
-import kz.hbscale.main.model.TaskEntity;
 import kz.hbscale.main.model.UserEntity;
+import kz.hbscale.main.repository.ConstructionRepository;
 import kz.hbscale.main.repository.DictionaryRepository;
 import kz.hbscale.main.repository.PersonRepository;
-import kz.hbscale.main.repository.TaskRepository;
 import kz.hbscale.main.repository.UserRepository;
 import kz.hbscale.main.security.facade.AuthenticationFacade;
-import kz.hbscale.main.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class TaskService {
+public class ConstructionService {
 
     private AuthenticationFacade authenticationFacade;
-    private TaskRepository taskRepository;
+    private ConstructionRepository constructionRepository;
     private DictionaryRepository dictionaryRepository;
     private UserRepository userRepository;
-    private Logger log = LogManager.getLogger(TaskService.class);
+    private Logger log = LogManager.getLogger(ConstructionService.class);
     private PersonRepository personRepository;
     private FileService fileService;
 
-    public TaskService(AuthenticationFacade authenticationFacade,
-                       TaskRepository taskRepository,
-                       DictionaryRepository dictionaryRepository,
-                       UserRepository userRepository,
-                       PersonRepository personRepository,
-                       FileService fileService) {
+    public ConstructionService(AuthenticationFacade authenticationFacade,
+                               ConstructionRepository taskRepository,
+                               DictionaryRepository dictionaryRepository,
+                               UserRepository userRepository,
+                               PersonRepository personRepository,
+                               FileService fileService) {
         this.authenticationFacade = authenticationFacade;
-        this.taskRepository = taskRepository;
+        this.constructionRepository = taskRepository;
         this.dictionaryRepository = dictionaryRepository;
         this.userRepository = userRepository;
         this.personRepository = personRepository;
         this.fileService = fileService;
     }
 
-    public TaskDto save(TaskDto taskDto) {
+    public ConstructionDto save(ConstructionDto taskDto) {
 
         String username = (String) authenticationFacade.getAuthentication().getPrincipal();
         log.info("username -{}-", username);
-        TaskEntity taskEntity = new TaskEntity();
+        ConstructionEntity taskEntity = new ConstructionEntity();
         if(taskDto.id != null) {
-            Optional<TaskEntity> task = taskRepository.findById(taskDto.id);
+            Optional<ConstructionEntity> task = constructionRepository.findById(taskDto.id);
             if(task.isPresent()) {
                 taskEntity = task.get();
             }
@@ -78,6 +74,7 @@ public class TaskService {
         taskEntity.contractor = taskDto.contractor;
         taskEntity.project = taskDto.project;
         taskEntity.customer = taskDto.customer;
+        taskEntity.type = ConstructionType.valueOf(taskDto.type);
 
         PersonEntity supplier = new PersonEntity(taskDto.supplier.fullname, taskDto.supplier.phone);
         PersonEntity director = new PersonEntity(taskDto.director.fullname, taskDto.director.phone);
@@ -86,38 +83,29 @@ public class TaskService {
         taskEntity.supplier = personRepository.save(supplier);
         taskEntity.director = personRepository.save(director);
         taskEntity.other = personRepository.save(other);
-
-        if(StringUtils.isNotEmpty(taskDto.status)) {
-            taskEntity.status= TaskStatus.valueOf(taskDto.status);
-        }
-
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        taskEntity.whenContact = LocalDate.parse(taskDto.whenContact, pattern);
-
-        this.taskRepository.save(taskEntity);
+        this.constructionRepository.save(taskEntity);
         this.fileService.updateContainerByCommonUUID(taskEntity.id, taskDto.commonUUID);
 
-        return new TaskDto(taskEntity);
+        return new ConstructionDto(taskEntity);
     }
 
-    public List<TaskDto> myTasks() {
-        String username = (String) authenticationFacade.getAuthentication().getPrincipal();
+//    public List<ConstructionDto> myTasks() {
+//        String username = (String) authenticationFacade.getAuthentication().getPrincipal();
+//        log.info("username -{}-", username);
+//        UserEntity user = userRepository.findByUsername(username);
+//        List<ConstructionEntity> tasks = constructionRepository.findByOwnerId(user.id);
+//        return tasks.stream().map(ConstructionDto::new).collect(Collectors.toList());
+//    }
 
-        log.info("username -{}-", username);
-        UserEntity user = userRepository.findByUsername(username);
-        List<TaskEntity> tasks = taskRepository.findByOwnerId(user.id);
-        return tasks.stream().map(TaskDto::new).sorted(Comparator.comparing((TaskDto taskDto) -> taskDto.daysLeft)).collect(Collectors.toList());
+    public List<ConstructionDto> findAll() {
+        List<ConstructionEntity> tasks = constructionRepository.findAll();
+//        return tasks.stream().map(ConstructionDto::new).sorted(Comparator.comparing((ConstructionDto taskDto) -> taskDto.daysLeft)).collect(Collectors.toList());
+        return tasks.stream().map(ConstructionDto::new).collect(Collectors.toList());
     }
 
-    public List<TaskDto> findAll() {
-        List<TaskEntity> tasks = taskRepository.findAll();
-        return tasks.stream().map(TaskDto::new).sorted(Comparator.comparing((TaskDto taskDto) -> taskDto.daysLeft)).collect(Collectors.toList());
+
+    public ConstructionDto findById(Long id) {
+        Optional<ConstructionEntity> construction = constructionRepository.findById(id);
+        return construction.isPresent() ? new ConstructionDto(construction.get()) : null;
     }
-
-
-    public List<ResultDto> getResults() {
-        return taskRepository.getResults();
-
-    }
-
 }

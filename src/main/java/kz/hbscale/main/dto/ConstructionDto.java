@@ -1,17 +1,11 @@
 package kz.hbscale.main.dto;
 
 
-import kz.hbscale.main.model.TaskEntity;
+import kz.hbscale.main.model.ConstructionEntity;
 
-import javax.persistence.TemporalType;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalField;
-import java.time.temporal.TemporalUnit;
 
-public class TaskDto {
+public class ConstructionDto {
     public String status;
     public Long id;
     public String name;
@@ -30,13 +24,13 @@ public class TaskDto {
     public BigDecimal lat;
     public BigDecimal lng;
     public String whenContact;
-    public Integer daysLeft = -1;
-
     public String commonUUID;
-    public TaskDto() {
+
+    public String type;
+    public ConstructionDto() {
     }
 
-    public TaskDto(TaskEntity taskEntity) {
+    public ConstructionDto(ConstructionEntity taskEntity) {
         this.id = taskEntity.id;
         this.name = taskEntity.name;
         this.from = new ConstructionPeriod(taskEntity.fromQuarter, taskEntity.fromYear);
@@ -65,18 +59,20 @@ public class TaskDto {
         this.contractor = taskEntity.contractor;
         this.project = taskEntity.project;
         this.customer = taskEntity.customer;
-
-        this.status = taskEntity.status.name();
-        if(taskEntity.whenContact != null) {
-            this.whenContact = taskEntity.whenContact.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            this.daysLeft = taskEntity.whenContact.getDayOfYear() - LocalDate.now().getDayOfYear();
+        if(taskEntity.type !=null ) {
+            this.type = taskEntity.type.name();
         }
+//        this.status = taskEntity.status.name();
+//        if(taskEntity.whenContact != null) {
+//            this.whenContact = taskEntity.whenContact.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//            this.daysLeft = taskEntity.whenContact.getDayOfYear() - LocalDate.now().getDayOfYear();
+//        }
 
     }
 
     @Override
     public String toString() {
-        return "TaskDto{" +
+        return "ConstructionDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
