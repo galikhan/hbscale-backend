@@ -1,13 +1,14 @@
 package kz.hbscale.main.service;
 
+import kz.hbscale.main.dto.ConstructionDto;
 import kz.hbscale.main.dto.ResultDto;
+import kz.hbscale.main.dto.UserTaskAndConstruction;
 import kz.hbscale.main.dto.UserTaskDto;
 import kz.hbscale.main.enums.TaskStatus;
 import kz.hbscale.main.model.ConstructionEntity;
 import kz.hbscale.main.model.UserEntity;
 import kz.hbscale.main.model.UserTaskEntity;
 import kz.hbscale.main.repository.ConstructionRepository;
-import kz.hbscale.main.repository.DictionaryRepository;
 import kz.hbscale.main.repository.UserRepository;
 import kz.hbscale.main.repository.UserTaskRepository;
 import kz.hbscale.main.security.facade.AuthenticationFacade;
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -69,10 +72,17 @@ public class UserTaskService {
         return new UserTaskDto(entity);
     }
 
-    public List<UserTaskDto> myTasks() {
+    public UserTaskAndConstruction myTasks() {
+
         String username = (String) authenticationFacade.getAuthentication().getPrincipal();
         UserEntity user = userRepository.findByUsername(username);
         List<UserTaskEntity>  tasks = userTaskRepository.findByOwnerId(user.id);
-        return tasks.stream().map(UserTaskDto::new).collect(Collectors.toList());
+
+        List<ConstructionEntity> constructions = userTaskRepository.myTasksConstructions(user.id);
+        List<ConstructionDto> dtoConstructions = constructions.stream().distinct().map(ConstructionDto::new).collect(Collectors.toList());
+
+        List<UserTaskDto> dtoTasks = tasks.stream().map(UserTaskDto::new).collect(Collectors.toList());
+
+        return new UserTaskAndConstruction(dtoTasks, dtoConstructions);
     }
 }

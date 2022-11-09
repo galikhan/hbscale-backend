@@ -34,6 +34,6 @@ public class UserTaskDto {
             this.status = entity.status.name();
         }
         this.owner = entity.owner.username;
-
+        this.created = entity.created;
     }
 }

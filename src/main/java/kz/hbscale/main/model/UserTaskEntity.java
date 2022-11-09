@@ -1,5 +1,6 @@
 package kz.hbscale.main.model;
 
+import kz.hbscale.main.dto.ConstructionDto;
 import kz.hbscale.main.dto.ResultDto;
 import kz.hbscale.main.enums.TaskStatus;
 import org.hibernate.annotations.Fetch;
@@ -8,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
+import javax.persistence.EntityResult;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -38,6 +40,13 @@ import java.time.LocalDateTime;
                 @ColumnResult(name="processing", type=Integer.class),
                 @ColumnResult(name="finished", type=Integer.class),
         }))
+
+@NamedNativeQuery(name="UserTaskEntity.myTasksConstruction",
+        query = "select c.* "
+                + " from tasks t join construction c "
+                + " on c.id = t.construction "
+                + " where t.owner = ?1",
+        resultClass = ConstructionEntity.class)
 @Entity
 @Table(name = "tasks")
 public class UserTaskEntity {

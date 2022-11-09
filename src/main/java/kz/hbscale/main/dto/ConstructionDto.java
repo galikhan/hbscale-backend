@@ -4,6 +4,7 @@ package kz.hbscale.main.dto;
 import kz.hbscale.main.model.ConstructionEntity;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class ConstructionDto {
     public String status;
@@ -87,5 +88,18 @@ public class ConstructionDto {
                 ", lat=" + lat +
                 ", lng=" + lng +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConstructionDto that = (ConstructionDto) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

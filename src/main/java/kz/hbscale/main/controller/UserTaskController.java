@@ -1,8 +1,11 @@
 package kz.hbscale.main.controller;
 
 import kz.hbscale.main.dto.ResultDto;
+import kz.hbscale.main.dto.UserTaskAndConstruction;
 import kz.hbscale.main.dto.UserTaskDto;
 import kz.hbscale.main.service.UserTaskService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +19,7 @@ import java.util.List;
 public class UserTaskController {
 
     private UserTaskService userTaskService;
-
+    private Logger logger = LogManager.getLogger(UserTaskService.class);
     public UserTaskController(UserTaskService userTaskService) {
         this.userTaskService = userTaskService;
     }
@@ -27,7 +30,8 @@ public class UserTaskController {
     }
 
     @GetMapping("/task")
-    public List<UserTaskDto> myTasks() {
+    public UserTaskAndConstruction myTasks() {
+        logger.info("item {}", this.userTaskService.myTasks());
         return this.userTaskService.myTasks();
     }
 

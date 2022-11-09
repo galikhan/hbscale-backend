@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="santec_task")
+@Table(name="construction")
 public class ConstructionEntity implements Serializable {
 
     @Id
