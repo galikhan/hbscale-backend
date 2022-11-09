@@ -59,6 +59,10 @@ public class UserTaskService {
         entity.isRemoved  = false;
         entity.status   = TaskStatus.waiting;
 
+        if(dto.id != null) {
+            entity.status = TaskStatus.valueOf(dto.status);
+        }
+
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         entity.whenContact = LocalDate.parse(dto.whenContact, pattern);
 
