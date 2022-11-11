@@ -25,15 +25,18 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@NamedNativeQuery(name="UserTaskEntity.getResults",
+@NamedNativeQuery(name="UserTaskEntity.getCountTaskInPeriod",
         query = "select "
                 + " users.username as owner,"
                 + " count(case when status='waiting' then 1 else null end) as waiting,"
                 + " count(case when status='processing' then 1 else null end) as processing,"
                 + " count(case when status='finished' then 1 else null end) as finished "
-                + " from tasks join users on users.id = tasks.owner group by users.username",
-        resultSetMapping = "Mapping.getResults")
-@SqlResultSetMapping(name="Mapping.getResults",
+                + " from tasks "
+                + " join users on users.id = tasks.owner "
+                + " where date(tasks.created) between date(:begin) and date(:end)"
+                + " group by users.username",
+        resultSetMapping = "Mapping.getCountTaskInPeriod")
+@SqlResultSetMapping(name="Mapping.getCountTaskInPeriod",
         classes = @ConstructorResult(targetClass = ResultDto.class, columns = {
                 @ColumnResult(name="owner", type=String.class),
                 @ColumnResult(name="waiting", type=Integer.class),
@@ -41,12 +44,6 @@ import java.time.LocalDateTime;
                 @ColumnResult(name="finished", type=Integer.class),
         }))
 
-@NamedNativeQuery(name="UserTaskEntity.myTasksConstruction",
-        query = "select c.* "
-                + " from tasks t join construction c "
-                + " on c.id = t.construction "
-                + " where t.owner = ?1",
-        resultClass = ConstructionEntity.class)
 @Entity
 @Table(name = "tasks")
 public class UserTaskEntity {

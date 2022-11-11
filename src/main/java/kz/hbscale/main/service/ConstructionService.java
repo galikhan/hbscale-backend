@@ -16,8 +16,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +34,7 @@ public class ConstructionService {
     private Logger log = LogManager.getLogger(ConstructionService.class);
     private PersonRepository personRepository;
     private FileService fileService;
+    private Logger logger = LogManager.getLogger(UserTaskService.class);
 
     public ConstructionService(AuthenticationFacade authenticationFacade,
                                ConstructionRepository taskRepository,
@@ -108,4 +111,23 @@ public class ConstructionService {
         Optional<ConstructionEntity> construction = constructionRepository.findById(id);
         return construction.isPresent() ? new ConstructionDto(construction.get()) : null;
     }
+
+    public List<ConstructionDto> getTasksConstructionsForLast7Days() {
+        logger.info("get last 7 days task's constructions");
+        LocalDate begin = LocalDate.now();
+        begin = begin.minus(7, ChronoUnit.DAYS);
+        LocalDate end = LocalDate.now();
+        List<ConstructionEntity> constructions = constructionRepository.tasksConstructionsInDateRange(begin, end);
+        return constructions.stream().distinct().map(ConstructionDto::new).collect(Collectors.toList());
+    }
+    public List<ConstructionDto> getTasksConstructionsForLastMonth() {
+        logger.info("get last month task's constructions");
+        LocalDate begin = LocalDate.now();
+        begin = begin.minus(begin.lengthOfMonth(), ChronoUnit.DAYS);
+        LocalDate end = LocalDate.now();
+        List<ConstructionEntity> constructions = constructionRepository.tasksConstructionsInDateRange(begin, end);
+        return constructions.stream().distinct().map(ConstructionDto::new).collect(Collectors.toList());
+    }
+
+
 }

@@ -19,9 +19,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,23 +43,23 @@ public class UserTaskService {
         this.constructionRepository = constructionRepository;
     }
 
-    public List<ResultDto> getResults() {
-        return userTaskRepository.getResults();
-    }
-
 
     public UserTaskDto save(UserTaskDto dto) {
 
+        logger.info("dto {}" + dto.toString());
         String username = (String) authenticationFacade.getAuthentication().getPrincipal();
 
         UserTaskEntity entity   =  new UserTaskEntity();
-        entity.created = LocalDateTime.now();
         entity.description = dto.description;
         entity.isRemoved  = false;
         entity.status   = TaskStatus.waiting;
 
         if(dto.id != null) {
+            entity.id = dto.id;
             entity.status = TaskStatus.valueOf(dto.status);
+            entity.created = dto.created;
+        } else {
+            entity.created = LocalDateTime.now();
         }
 
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -84,9 +83,57 @@ public class UserTaskService {
 
         List<ConstructionEntity> constructions = userTaskRepository.myTasksConstructions(user.id);
         List<ConstructionDto> dtoConstructions = constructions.stream().distinct().map(ConstructionDto::new).collect(Collectors.toList());
-
         List<UserTaskDto> dtoTasks = tasks.stream().map(UserTaskDto::new).collect(Collectors.toList());
 
         return new UserTaskAndConstruction(dtoTasks, dtoConstructions);
+    }
+
+    public List<ResultDto> getCountTaskInPeriod(LocalDate begin, LocalDate end) {
+        return userTaskRepository.getCountTaskInPeriod(begin, end);
+    }
+
+    public List<ResultDto> getMonthlyCount() {
+        logger.info("get monthly");
+        LocalDate begin = LocalDate.now();
+        int daysInMonth = begin.lengthOfMonth();
+        begin = begin.minus(daysInMonth, ChronoUnit.DAYS);
+        LocalDate end = LocalDate.now();
+        return getCountTaskInPeriod(begin, end);
+    }
+
+
+    public List<ResultDto> getLast7DaysCount() {
+        logger.info("get last 7 days");
+        LocalDate begin = LocalDate.now();
+        begin = begin.minus(7, ChronoUnit.DAYS);
+        LocalDate end = LocalDate.now();
+        return getCountTaskInPeriod(begin, end);
+    }
+
+    public UserTaskAndConstruction getAllLast7DaysTasks() {
+        List<UserTaskEntity> tasks = userTaskRepository.findTaskInPeriod(sevenDaysBeforeDate(), currentDate());
+        List<ConstructionEntity> constructions = constructionRepository.tasksConstructionsInDateRange(sevenDaysBeforeDate(), currentDate());
+        return new UserTaskAndConstruction(UserTaskDto.toDto(tasks), ConstructionDto.toDto(constructions));
+    }
+
+    public UserTaskAndConstruction getAllMonthlyTasks() {
+        List<UserTaskEntity> tasks = userTaskRepository.findTaskInPeriod(monthBeforeDate(), currentDate());
+        List<ConstructionEntity> constructions = constructionRepository.tasksConstructionsInDateRange(monthBeforeDate(), currentDate());
+        return new UserTaskAndConstruction(UserTaskDto.toDto(tasks), ConstructionDto.toDto(constructions));
+    }
+
+    public LocalDate sevenDaysBeforeDate() {
+        LocalDate begin = LocalDate.now();
+        return begin.minus(7, ChronoUnit.DAYS);
+    }
+
+    public LocalDate monthBeforeDate() {
+        LocalDate begin = LocalDate.now();
+        int daysInMonth = begin.lengthOfMonth();
+        return begin.minus(daysInMonth, ChronoUnit.DAYS);
+    }
+
+    public LocalDate currentDate() {
+        return LocalDate.now();
     }
 }

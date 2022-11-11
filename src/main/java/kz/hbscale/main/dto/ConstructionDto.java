@@ -4,7 +4,9 @@ package kz.hbscale.main.dto;
 import kz.hbscale.main.model.ConstructionEntity;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ConstructionDto {
     public String status;
@@ -69,6 +71,10 @@ public class ConstructionDto {
 //            this.daysLeft = taskEntity.whenContact.getDayOfYear() - LocalDate.now().getDayOfYear();
 //        }
 
+    }
+
+    public static List<ConstructionDto> toDto(List<ConstructionEntity> constructions) {
+        return constructions.stream().map(ConstructionDto::new).collect(Collectors.toList());
     }
 
     @Override

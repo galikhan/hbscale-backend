@@ -26,7 +26,26 @@ public class UserTaskController {
 
     @GetMapping("/task/results")
     public List<ResultDto> getResults() {
-        return this.userTaskService.getResults();
+        return this.userTaskService.getCountTaskInPeriod(null, null);
+    }
+
+    @GetMapping("/task/count/last7days")
+    public List<ResultDto> getLast7DaysCount() {
+        return this.userTaskService.getLast7DaysCount();
+    }
+
+    @GetMapping("/task/count/monthly")
+    public List<ResultDto> getMonthlyCount() {
+        return this.userTaskService.getMonthlyCount();
+    }
+
+    @GetMapping("/task/last7days")
+    public UserTaskAndConstruction getAllLast7DaysTasks() {
+        return this.userTaskService.getAllLast7DaysTasks();
+    }
+    @GetMapping("/task/monthly")
+    public UserTaskAndConstruction getAllMonthlyTasks() {
+        return this.userTaskService.getAllMonthlyTasks();
     }
 
     @GetMapping("/task")

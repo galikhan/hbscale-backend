@@ -4,6 +4,8 @@ import kz.hbscale.main.model.UserTaskEntity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserTaskDto {
 
@@ -35,5 +37,22 @@ public class UserTaskDto {
         }
         this.owner = entity.owner.username;
         this.created = entity.created;
+    }
+
+    public static List<UserTaskDto> toDto(List<UserTaskEntity> tasks) {
+        return tasks.stream().map(UserTaskDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "UserTaskDto{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", whenContact='" + whenContact + '\'' +
+                ", created=" + created +
+                ", construction=" + construction +
+                ", owner='" + owner + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }
