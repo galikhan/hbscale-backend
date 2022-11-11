@@ -94,20 +94,13 @@ public class UserTaskService {
 
     public List<ResultDto> getMonthlyCount() {
         logger.info("get monthly");
-        LocalDate begin = LocalDate.now();
-        int daysInMonth = begin.lengthOfMonth();
-        begin = begin.minus(daysInMonth, ChronoUnit.DAYS);
-        LocalDate end = LocalDate.now();
-        return getCountTaskInPeriod(begin, end);
+        return getCountTaskInPeriod(thirtyDasBeforeDate(), currentDate());
     }
 
 
     public List<ResultDto> getLast7DaysCount() {
         logger.info("get last 7 days");
-        LocalDate begin = LocalDate.now();
-        begin = begin.minus(7, ChronoUnit.DAYS);
-        LocalDate end = LocalDate.now();
-        return getCountTaskInPeriod(begin, end);
+        return getCountTaskInPeriod(sevenDaysBeforeDate(), currentDate());
     }
 
     public UserTaskAndConstruction getAllLast7DaysTasks() {
@@ -117,8 +110,8 @@ public class UserTaskService {
     }
 
     public UserTaskAndConstruction getAllMonthlyTasks() {
-        List<UserTaskEntity> tasks = userTaskRepository.findTaskInPeriod(monthBeforeDate(), currentDate());
-        List<ConstructionEntity> constructions = constructionRepository.tasksConstructionsInDateRange(monthBeforeDate(), currentDate());
+        List<UserTaskEntity> tasks = userTaskRepository.findTaskInPeriod(thirtyDasBeforeDate(), currentDate());
+        List<ConstructionEntity> constructions = constructionRepository.tasksConstructionsInDateRange(thirtyDasBeforeDate(), currentDate());
         return new UserTaskAndConstruction(UserTaskDto.toDto(tasks), ConstructionDto.toDto(constructions));
     }
 
@@ -127,10 +120,9 @@ public class UserTaskService {
         return begin.minus(7, ChronoUnit.DAYS);
     }
 
-    public LocalDate monthBeforeDate() {
+    public LocalDate thirtyDasBeforeDate() {
         LocalDate begin = LocalDate.now();
-        int daysInMonth = begin.lengthOfMonth();
-        return begin.minus(daysInMonth, ChronoUnit.DAYS);
+        return begin.minus(30, ChronoUnit.DAYS);
     }
 
     public LocalDate currentDate() {
